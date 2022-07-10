@@ -6,7 +6,7 @@ export const HomePage = () => {
         <section className="home-page">
             <div className="dark-overlay">
                 <div className="home-page-inner">
-                    <h1 className="x-large">Developer Connector</h1>
+                    <h1 className="x-large">LinkeDev</h1>
                     <p className="lead">
                         Create a developer profile, connect via social media you like, share posts and get help from other developers, Your connactions start below here
                     </p>

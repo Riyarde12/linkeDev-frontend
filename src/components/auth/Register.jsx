@@ -1,12 +1,16 @@
 import { useForm } from "../../hooks/useForm.js";
 import { Link } from "react-router-dom";
-// import PropTypes from "prop-types";
-import { useDispatch } from 'react-redux';
-import { setAlert, removeAlert } from "../../store/features/alertSlice.js";
+import { useDispatch, useSelector } from 'react-redux';
 import { makeAlert } from '../../service/utilService.js';
+// SERVICE 
+
+// STORE 
+import { setAlert, removeAlert } from "../../store/features/alertSlice.js";
+import { registerSuccess, getRegisterToken } from "../../store/features/authSlice.js";
 
 export const Register = () => {
 
+    const isAuthenticated = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     const [formData, handleChange] = useForm({
@@ -17,15 +21,20 @@ export const Register = () => {
     });
 
     const onSubmit = async e => {
+        const { name, email, password } = formData;
         e.preventDefault();
         if (formData.password !== formData.validPassword) {
             // const newAlert = { msg: 'Passwords dont match', alertType: 'danger' };
             const newAlert = makeAlert();
-            console.log('newAlert', newAlert);
+            // console.log('newAlert', newAlert);
             dispatch(setAlert(newAlert));
 
             setTimeout(() => dispatch(removeAlert(newAlert.id)), 5000);
-        } else console.log(formData);
+        } else {
+            dispatch(registerSuccess());
+            dispatch(getRegisterToken({ name, email, password }));
+
+        }
     };
 
     return (

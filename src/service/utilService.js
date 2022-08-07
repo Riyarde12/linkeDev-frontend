@@ -6,9 +6,9 @@ export function makeId(length = 5) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
-}
+};
 
-export const makeAlert = () => {
+export function makeAlert() {
     const newAlert = { msg: 'Passwords dont match', alertType: 'danger', id: makeId() };
     return newAlert;
 };

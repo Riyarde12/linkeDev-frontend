@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect } from 'react';
 import './styles/style.scss';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom';
 import { Navbar } from './components/layout/Navbar';
+import { Dashboard } from './components/dashboard/Dashboard';
+import { PrivateRoute } from './routing/PrivateRoute';
 import { HomePage } from './components/layout/HomePage';
 import { Login } from './components/auth/Login';
 import { Register } from './components/auth/Register';
@@ -27,12 +29,14 @@ const App = () => {
         <Alert />
         <Routes>
           <Route exact path="/*" element={<HomePage />} />
+          <Route path="/dashboard/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           <Route path="/register/*" element={<Register />} />
           <Route path="/login/*" element={<Login />} />
+          <Route path="*" element={<Navigate to="/login/" />} />
         </Routes>
 
       </Fragment>;
-    </Router>
+    </Router >
   );
 };
 

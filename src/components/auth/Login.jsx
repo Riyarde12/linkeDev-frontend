@@ -1,18 +1,27 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { useForm } from "../../hooks/useForm";
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserAuthenticated, getUserLogin } from '../../store/features/authSlice';
 
 export const Login = () => {
+    const dispatch = useDispatch();
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
     const [formData, handleChange] = useForm({
         email: '',
         password: '',
     });
 
-
     const onSubmit = async e => {
+        const { email, password } = formData;
         e.preventDefault();
-        console.log('Success');
+        console.log('isAuthenticated', isAuthenticated);
+        dispatch(getUserLogin(email, password));
+        // dispatch(getUserAuthenticated());
     };
+
+    // Redirect if logged in
+    if (isAuthenticated) return <Navigate to="/dashboard" />;
 
     return (
         <section className="container">

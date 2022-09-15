@@ -1,9 +1,9 @@
 import axios from 'axios';
 import {
     loadFromStorage,
-    storeToStorage
 } from './storageService.js';
 
+// Register user
 export async function register({ name, email, password }) {
     const config = {
         headers: {
@@ -21,13 +21,62 @@ export async function register({ name, email, password }) {
     }
     catch (err) {
         console.error(err);
+        const errors = err.response.data.errors;
         return {
             type: 'registerFail',
-            err,
+            errs: errors
         };
     }
 
 };
+
+// Login user
+export async function login(email, password) {
+    const config = {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
+
+    const body = JSON.stringify({ email, password });
+
+    try {
+        const res = await axios.post('/api/auth', body, config);
+        return {
+            type: 'loginSuccess',
+            data: res.data
+        };
+    }
+    catch (err) {
+        console.error(err);
+        const errors = err.response.data.errors;
+        return {
+            type: 'loginFail',
+            errs: errors
+        };
+    }
+
+};
+
+export async function loadUser() {
+    // if (localStorage.token) {
+    //     setAuthToken(localStorage.token);
+    // }
+    try {
+        const res = await axios.get('/api/auth');
+        return {
+            userAuthenticated: true,
+            data: res.data
+        };
+    } catch (err) {
+        console.log('err', err);
+        return {
+            type: 'userAuthenticatedFailed',
+            errs: err.response.data.errors
+        };
+    }
+}
+
 export function getRegisterStatus() {
     return {
         token: loadFromStorage('token'),

@@ -1,6 +1,6 @@
 
 export function storeToStorage(key, value) {
-    localStorage[key] = JSON.stringify(value);
+    localStorage[key] = value;
 }
 
 export function loadFromStorage(key, defaultValue = []) {

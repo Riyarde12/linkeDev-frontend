@@ -10,7 +10,7 @@ import { registerSuccess, getRegisterToken } from "../../store/features/authSlic
 
 export const Register = () => {
 
-    const isAuthenticated = useSelector((state) => state.auth);
+    // const isAuthenticated = useSelector((state) => state.auth);
     const dispatch = useDispatch();
 
     const [formData, handleChange] = useForm({
@@ -43,7 +43,7 @@ export const Register = () => {
             <p className="lead"><i className="fas fa-user"></i> Create Your Account</p>
             <form className="form" onSubmit={onSubmit}>
                 <div className="form-group">
-                    <input type="text" placeholder="Name" name="name" value={formData.name} onChange={handleChange} required />
+                    <input type="text" placeholder="Name" name="name" value={formData.name} onChange={handleChange} />
                 </div>
                 <div className="form-group">
                     <input type="email" placeholder="Email Address" value={formData.email} onChange={handleChange} name="email" />
@@ -57,7 +57,7 @@ export const Register = () => {
                         type="password"
                         placeholder="Password"
                         name="password"
-                        minLength="6"
+                        // minLength="6"
                         value={formData.password}
                         onChange={handleChange}
                     />
@@ -67,7 +67,7 @@ export const Register = () => {
                         type="password"
                         placeholder="Confirm Password"
                         name="validPassword"
-                        minLength="6"
+                        // minLength="6"
                         value={formData.validPassword}
                         onChange={handleChange}
                     />

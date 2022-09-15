@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import { loadFromStorage, storeToStorage } from '../../service/authService';
-import { register } from '../../service/authService';
+import { loadUser, login, register } from '../../service/authService';
+import { storeToStorage } from '../../service/storageService';
+import { setAuthToken } from '../../service/utilService';
+
+import { setAlert } from './alertSlice';
 
 const initialState = {
     token: '',
@@ -14,46 +17,76 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         registerSuccess: (state, action) => {
-            localStorage.setItem('token', action.payload);
+            storeToStorage('token', action.payload);
+            state.token = action.payload;
             state.isAuthenticated = true;
             state.loading = false;
         },
-        registerFail: ({ isAuthenticated, token, loading }, { payload }) => {
+        registerFail: state => {
             localStorage.removeItem('token');
-            isAuthenticated = false;
-            token = null;
-            loading = false;
+            state.isAuthenticated = false;
+            state.token = null;
+            state.loading = false;
         },
-        // getRegisterToken: async (state, action) => {
-        //     console.log('action.payload', action.payload);
-        //     console.log('action.payload', action);
-        //     // console.log('data', data);
-        //     const registerStatus = await register(action.payload);
-        //     console.log('registerStatus', registerStatus);
-        //     if (registerStatus.type === 'registerSuccess') {
-        //         localStorage.setItem('token', registerStatus.data);
-        //         state.isAuthenticated = true;
-        //         state.loading = false;
-        //     } else {
-        //         localStorage.removeItem('token');
-        //         state.isAuthenticated = false;
-        //         state.token = null;
-        //         state.loading = false;
-        //     }
-        // }
+        loginSuccess: (state, action) => {
+            storeToStorage('token', action.payload.token);
+            state.token = action.payload.token;
+            state.isAuthenticated = true;
+            state.loading = false;
+        },
+        loginFail: state => {
+            state.localStorage.removeItem('token');
+            state.isAuthenticated = false;
+            state.loading = false;
+            state.token = null;
+        },
+        userLoaded: (state, action) => {
+            state.isAuthenticated = true;
+            state.loading = false;
+            state.user = action.payload;
+        },
+        authError: state => {
+            localStorage.removeItem('token');
+            state.isAuthenticated = false;
+            state.token = null;
+            state.loading = false;
+        }
     }
 });
 
+export const getUserLogin = (email, password) => async dispatch => {
+    const res = await login(email, password);
 
-export const getRegisterToken = (registerInfo) => async (dispatch) => {
-    console.log('registerInfo', registerInfo);
-    const isRegisterThanToken = await register(registerInfo);
-    console.log('ifregisterThanToken', isRegisterThanToken);
-    if (isRegisterThanToken.type === 'registerSuccess') dispatch(registerSuccess(isRegisterThanToken.data.token));
-    else dispatch(registerFail);
+    if (res.type === 'loginSuccess') dispatch(loginSuccess(res.data));
+    else dispatch(loginFail());
 };
 
+export const getUserAuthenticated = () => async (dispatch) => {
+    if (localStorage.token) setAuthToken(localStorage.token);
 
-export const { registerSuccess, registerFail } = authSlice.actions;
+    try {
+        const res = await loadUser();
+        if (res.userAuthenticated) {
+            dispatch(userLoaded(res.data));
+        }
+    } catch (err) {
+        dispatch(authError());
+    }
+};
+
+export const getRegisterToken = (registerInfo) => async (dispatch) => {
+
+    const isRegisterThanToken = await register(registerInfo);
+
+    if (isRegisterThanToken.type === 'registerSuccess') dispatch(registerSuccess(isRegisterThanToken.data.token));
+    else {
+        dispatch(registerFail());
+        isRegisterThanToken.errs.forEach(err => {
+            dispatch(setAlert(err.msg, 'danger'));
+        });
+    }
+};
+
+export const { registerSuccess, registerFail, authError, userLoaded, loginSuccess, loginFail } = authSlice.actions;
 
 export default authSlice.reducer;

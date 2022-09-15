@@ -40,6 +40,12 @@ export const authSlice = createSlice({
             state.loading = false;
             state.token = null;
         },
+        logout: state => {
+            localStorage.removeItem('token');
+            state.isAuthenticated = false;
+            state.token = null;
+            state.loading = false;
+        },
         userLoaded: (state, action) => {
             state.isAuthenticated = true;
             state.loading = false;
@@ -87,6 +93,6 @@ export const getRegisterToken = (registerInfo) => async (dispatch) => {
     }
 };
 
-export const { registerSuccess, registerFail, authError, userLoaded, loginSuccess, loginFail } = authSlice.actions;
+export const { registerSuccess, registerFail, authError, userLoaded, loginSuccess, loginFail, logout } = authSlice.actions;
 
 export default authSlice.reducer;
